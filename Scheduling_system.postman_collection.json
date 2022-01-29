@@ -1,0 +1,29 @@
+{
+	"info": {
+		"_postman_id": "60d0e2ea-480f-4b08-90fd-b23a53ed71f4",
+		"name": "Scheduling system",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get schedule by student id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/scheduling/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"scheduling",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
