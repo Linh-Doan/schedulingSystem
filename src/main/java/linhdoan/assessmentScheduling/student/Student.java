@@ -34,6 +34,10 @@ public class Student {
         this.studentId = studentId;
     }
 
+    public Integer getStudentId() {
+        return studentId;
+    }
+
     private List<ScheduledAssessment> getScheduleInternal() {
         if (schedule == null) {
             schedule = new ArrayList<>();

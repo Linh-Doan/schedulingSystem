@@ -68,9 +68,8 @@ public class ScheduledAssessment {
     public ScheduledAssessment() {
     }
 
-    public ScheduledAssessment(Integer assessmentId, Student student, String unitCode, Float assessmentWeight, LocalDate dueDate, LocalDate startDate) {
+    public ScheduledAssessment(Integer assessmentId, String unitCode, Float assessmentWeight, LocalDate dueDate, LocalDate startDate) {
         this.assessmentId = assessmentId;
-        this.student = student;
         this.unitCode = unitCode;
         this.assessmentWeight = assessmentWeight;
         this.dueDate = dueDate;

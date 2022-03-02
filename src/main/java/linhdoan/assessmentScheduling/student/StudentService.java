@@ -62,23 +62,11 @@ public class StudentService {
                 JSONArray assessments = new JSONArray(jsonBody.toString());
                 for (int i = 0; i < assessments.length(); i++) {
                     JSONObject jsonAssessment = assessments.getJSONObject(i);
-                    Integer assessmentId = jsonAssessment.getInt("assessmentId");
-                    String unitCode = jsonAssessment.getJSONObject("offering").getJSONObject("unit").getString("unitCode");
-                    Float assessmentWeight = jsonAssessment.getFloat("assessmentWeight");
-                    String dueDateString = jsonAssessment.getString("assessmentDate");
-                    LocalDate dueDate = LocalDate.parse(dueDateString, DateTimeFormatter.ofPattern("yyyy-MM-d"));
-                    LocalDate startDate = null;
-                    if (assessmentWeight <= 0.1) {
-                        startDate = dueDate.minusDays(SMALL_ASSESSMENT_TIME);
-                    } else if (assessmentWeight <= 0.2) {
-                        startDate = dueDate.minusDays(MEDIUM_ASSESSMENT_TIME);
-                    } else if (assessmentWeight <= 1) {
-                        startDate = dueDate.minusDays(LARGE_ASSESSMENT_TIME);
-                    }
-                    ScheduledAssessment scheduledAssessment = new ScheduledAssessment(assessmentId, student, unitCode, assessmentWeight, dueDate, startDate);
-                    schedule.add(scheduledAssessment);
+                    ScheduledAssessment scheduledAssessment = extractScheduledAssessmentFromJson(jsonAssessment);
+                    scheduledAssessment.setStudent(student);
                     student.addToSchedule(scheduledAssessment);
                     scheduledAssessmentRepository.save(scheduledAssessment);
+                    schedule.add(scheduledAssessment);
                 }
             } else if (connection.getResponseCode() == HttpStatus.BAD_REQUEST.value()) {
                 throw new IllegalStateException(connection.getResponseMessage());
@@ -87,5 +75,27 @@ public class StudentService {
         } catch (ConnectException e) {
             return scheduledAssessmentRepository.findScheduledAssessmentsByStudent_StudentId(studentId);
         }
+    }
+
+    protected ScheduledAssessment extractScheduledAssessmentFromJson(JSONObject jsonObject) {
+        Integer assessmentId = jsonObject.getInt("assessmentId");
+        String unitCode = jsonObject.getJSONObject("offering").getJSONObject("unit").getString("unitCode");
+        Float assessmentWeight = jsonObject.getFloat("assessmentWeight");
+        String dueDateString = jsonObject.getString("assessmentDate");
+        LocalDate dueDate = LocalDate.parse(dueDateString, DateTimeFormatter.ofPattern("yyyy-MM-d"));
+        LocalDate startDate = getStartDate(assessmentWeight, dueDate);
+        return new ScheduledAssessment(assessmentId, unitCode, assessmentWeight, dueDate, startDate);
+    }
+
+    protected LocalDate getStartDate(Float assessmentWeight, LocalDate dueDate) {
+        LocalDate startDate = null;
+        if (assessmentWeight <= 0.1f) {
+            startDate = dueDate.minusDays(SMALL_ASSESSMENT_TIME);
+        } else if (assessmentWeight <= 0.2f) {
+            startDate = dueDate.minusDays(MEDIUM_ASSESSMENT_TIME);
+        } else if (assessmentWeight <= 1f) {
+            startDate = dueDate.minusDays(LARGE_ASSESSMENT_TIME);
+        }
+        return startDate;
     }
 }
